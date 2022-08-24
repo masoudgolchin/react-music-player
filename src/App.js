@@ -9,10 +9,16 @@ function App() {
     return songs.filter((song) => song.active === true);
   });
 
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
     <div className="App">
       <Song currentSong={currentSong[0]} />
-      <Player />
+      <Player
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        currentSong={currentSong[0]}
+      />
     </div>
   );
 }
