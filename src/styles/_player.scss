@@ -26,8 +26,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
 
-    svg {
-        cursor: pointer;
+.skip-forward, .skip-back, .play {
+    cursor: pointer;
+    &.disabled {
+        cursor: not-allowed;
+        color: rgb(159, 159, 159)
     }
 }
+  

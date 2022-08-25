@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Player from "./components/Player";
 import Song from "./components/Song";
 import Library from "./components/Library";
@@ -9,6 +9,9 @@ import data from "./data";
 function App() {
   // Ref
   const audioRef = useRef(null);
+  const backRef = useRef(null);
+  const playRef = useRef(null);
+  const forwardRef = useRef(null);
 
   const [Songs, setSongs] = useState(data());
   const [currentSong, setCurrentSong] = useState(() => {
@@ -43,9 +46,15 @@ function App() {
         setIsPlaying={setIsPlaying}
         currentSong={currentSong[0]}
         audioRef={audioRef}
+        backRef={backRef}
+        playRef={playRef}
+        forwardRef={forwardRef}
         timeUpdateHandler={timeUpdateHandler}
         songInfo={songInfo}
         setSongInfo={setSongInfo}
+        songs={Songs}
+        setCurrentSong={setCurrentSong}
+        setSongs={setSongs}
       />
       <Library
         audioRef={audioRef}
