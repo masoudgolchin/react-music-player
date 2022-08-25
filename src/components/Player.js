@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -7,10 +7,15 @@ import {
   faPause,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
-  // Ref
-  const audioRef = useRef(null);
-
+const Player = ({
+  setSongInfo,
+  songInfo,
+  currentSong,
+  isPlaying,
+  setIsPlaying,
+  audioRef,
+  timeUpdateHandler,
+}) => {
   // Event Handlers
   const playSongHandler = (e) => {
     if (isPlaying) {
@@ -21,21 +26,11 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
     setIsPlaying(!isPlaying);
   };
 
-  const timeUpdateHandler = (e) => {
-    const current = e.target.currentTime;
-    const duration = e.target.duration;
-    setSongInfo({
-      ...songInfo,
-      currentTime: current,
-      duration, // It's equal to duration: duration
-    });
-  };
-
   const dragHandler = (e) => {
     audioRef.current.currentTime = e.target.value;
     setSongInfo({
       ...songInfo,
-      currentTime: e.targt.value,
+      currentTime: e.target.value,
     });
   };
 
@@ -44,12 +39,6 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
       Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
     );
   };
-
-  // State
-  const [songInfo, setSongInfo] = useState({
-    currentTime: 0,
-    duration: 0,
-  });
 
   return (
     <div className="player">
