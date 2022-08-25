@@ -24,23 +24,8 @@ const Player = ({
   forwardRef,
 }) => {
   useEffect(() => {
-    const newSongs = songs.map((state) => {
-      if (state.id === currentSong.id) {
-        return {
-          ...state,
-          active: true,
-        };
-      } else {
-        return {
-          ...state,
-          active: false,
-        };
-      }
-    });
-    setSongs(newSongs);
-
-    // Disable back and forward buttons
-    HandleButtonsVisibility(songs, currentSong, forwardRef, backRef);
+    // Continue playing the music if it's currently playing
+    if (isPlaying) audioRef.current.play();
   }, [currentSong]);
 
   // Event Handlers
@@ -61,11 +46,15 @@ const Player = ({
     });
   };
 
-  const skipTrackHandler = async (direction) => {
+  const skipTrackHandler = (direction) => {
     let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
     let newIndex = direction === "back" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex >= 0 && newIndex < songs.length) {
-      await setCurrentSong([songs[newIndex]]);
+      console.log(currentSong);
+      setCurrentSong(() => {
+        return [songs[newIndex]];
+      });
+      activeLibraryHandler(songs[newIndex]);
     }
   };
 
@@ -73,6 +62,33 @@ const Player = ({
     return (
       Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
     );
+  };
+
+  const onEndHandler = () => {
+    skipTrackHandler("forward");
+    let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    if (currentIndex === songs.length - 1) {
+      setIsPlaying(false);
+    }
+  };
+
+  const activeLibraryHandler = (nextPrev) => {
+    const newSongs = songs.map((state) => {
+      if (state.id === nextPrev.id) {
+        return {
+          ...state,
+          active: true,
+        };
+      } else {
+        return {
+          ...state,
+          active: false,
+        };
+      }
+    });
+    setSongs(newSongs);
+    // Disable back and forward buttons
+    HandleButtonsVisibility(songs, nextPrev, forwardRef, backRef);
   };
 
   // Add the styles
@@ -129,6 +145,7 @@ const Player = ({
         onTimeUpdate={timeUpdateHandler}
         src={currentSong.audio}
         onLoadedMetadata={timeUpdateHandler}
+        onEnded={onEndHandler}
       ></audio>
     </div>
   );
