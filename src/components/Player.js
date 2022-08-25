@@ -6,7 +6,7 @@ import {
   faAngleRight,
   faPause,
 } from "@fortawesome/free-solid-svg-icons";
-import { playAudio } from "../util";
+import { HandleButtonsVisibility } from "../util";
 
 const Player = ({
   setSongInfo,
@@ -39,16 +39,8 @@ const Player = ({
     });
     setSongs(newSongs);
 
-    let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
-
-    if (currentIndex === songs.length - 1) {
-      forwardRef.current.classList.add("disabled");
-    } else if (currentIndex <= 0) {
-      backRef.current.classList.add("disabled");
-    } else {
-      backRef.current.classList.remove("disabled");
-      forwardRef.current.classList.remove("disabled");
-    }
+    // Disable back and forward buttons
+    HandleButtonsVisibility(songs, currentSong, forwardRef, backRef);
   }, [currentSong]);
 
   // Event Handlers
@@ -69,12 +61,11 @@ const Player = ({
     });
   };
 
-  const skipTrackHandler = (direction) => {
+  const skipTrackHandler = async (direction) => {
     let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
     let newIndex = direction === "back" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex >= 0 && newIndex < songs.length) {
-      setCurrentSong([songs[newIndex]]);
-      playAudio(isPlaying, audioRef, setIsPlaying);
+      await setCurrentSong([songs[newIndex]]);
     }
   };
 
@@ -84,17 +75,30 @@ const Player = ({
     );
   };
 
+  // Add the styles
+  const trackAnim = {
+    transform: `translateX(${songInfo.animationPercentage}%)`,
+  };
+
   return (
     <div className="player">
       <div className="time-control">
         <p>{getTime(songInfo.currentTime)}</p>
-        <input
-          min="0"
-          max={songInfo.duration || 0}
-          value={songInfo.currentTime}
-          type="range"
-          onChange={dragHandler}
-        />
+        <div
+          className="track"
+          style={{
+            background: `linear-gradient(to right, ${currentSong.color[0]},${currentSong.color[1]})`,
+          }}
+        >
+          <input
+            min="0"
+            max={songInfo.duration || 0}
+            value={songInfo.currentTime}
+            type="range"
+            onChange={dragHandler}
+          />
+          <div className="animate-track" style={trackAnim}></div>
+        </div>
         <p>{songInfo.duration ? getTime(songInfo.duration) : "00:00"}</p>
       </div>
       <div className="play-control">
